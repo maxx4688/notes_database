@@ -16,7 +16,7 @@ ThemeData lightMode = ThemeData(
   colorScheme: const ColorScheme.light(
       // surface: Color(0xFFEAEDF4),
       primary: Color(0xFF2A2733),
-      secondary: Colors.yellow,
+      secondary: Colors.blue,
       inversePrimary: Colors.blue),
 );
 
