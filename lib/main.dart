@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:notes_database/firebase/user_provider.dart';
 import 'package:notes_database/login_page.dart';
 import 'package:notes_database/pages/home_page.dart';
@@ -64,12 +65,16 @@ class _CheckLoginState extends State<CheckLogin> {
       }
     } else {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
+          context, MaterialPageRoute(builder: (context) => const LoginPage()));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: LinearProgressIndicator()));
+    return const Scaffold(
+        body: Center(
+            child: SpinKitDoubleBounce(
+      color: Colors.black,
+    )));
   }
 }

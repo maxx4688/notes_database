@@ -1,10 +1,12 @@
+import 'dart:ui';
+
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:notes_database/firebase/user_provider.dart';
-import 'package:notes_database/login_page.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:notes_database/my_drawer.dart';
+import 'package:notes_database/theme/theme_constance.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -33,11 +35,32 @@ class _HomePageState extends State<HomePage> {
             children: [
               TextField(
                 controller: titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Colors.black12,
+                  labelText: 'Title',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
               ),
-              TextField(
-                controller: contentController,
-                decoration: const InputDecoration(labelText: 'Content'),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 200,
+                child: TextField(
+                  controller: contentController,
+                  decoration: const InputDecoration(
+                      labelText: 'Content',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20)))),
+                  // maxLength: null,
+                  maxLines: null,
+                  minLines: null,
+                  expands: true,
+                ),
               ),
             ],
           ),
@@ -107,9 +130,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-
     return Scaffold(
+      drawer: const MyDrawer(),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('users')
@@ -119,11 +141,16 @@ class _HomePageState extends State<HomePage> {
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: SpinKitDoubleBounce(
+              color: Colors.black,
+            ));
           }
 
           if (snapshot.hasError) {
-            return const Center(child: Text("Error loading notes"));
+            return const Center(
+              child: Text("Error loading notes"),
+            );
           }
 
           final notes = snapshot.data!.docs;
@@ -135,15 +162,23 @@ class _HomePageState extends State<HomePage> {
           return Stack(
             children: [
               ListView.builder(
-                padding: const EdgeInsets.only(left: 15, right: 15, top: 100),
+                padding: const EdgeInsets.only(left: 15, right: 15, top: 110),
                 itemCount: notes.length,
                 itemBuilder: (context, index) {
                   var note = notes[index];
                   return Card(
                     elevation: 10,
+                    shadowColor: Colors.black45,
                     child: ListTile(
-                      title: Text(note['noteTitle']),
-                      subtitle: Text(note['noteContent']),
+                      title: Text(
+                        note['noteTitle'],
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        note['noteContent'],
+                        maxLines: 2,
+                        overflow: TextOverflow.fade,
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -153,10 +188,84 @@ class _HomePageState extends State<HomePage> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete),
-                            onPressed: () => _deleteNote(note.id),
+                            onPressed: () =>
+                                ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                    'Are you sure you want to delete this note?'),
+                                action: SnackBarAction(
+                                    textColor: Colors.red,
+                                    label: 'Yes',
+                                    onPressed: () => _deleteNote(note.id)),
+                              ),
+                            ),
                           ),
                         ],
                       ),
+                      onTap: () {
+                        showModal(
+                          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              scrollable: true,
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => Navigator.pop(context),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 5),
+                                          height: 15,
+                                          width: 15,
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xFFff6059),
+                                              shape: BoxShape.circle),
+                                        ),
+                                        Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 5),
+                                          height: 15,
+                                          width: 15,
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Color(0xFFffbc40),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 5),
+                                          height: 15,
+                                          width: 15,
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xFF17c84c),
+                                              shape: BoxShape.circle),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text(
+                                    note['noteTitle'],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(note['noteContent']),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
                   );
                 },
@@ -166,29 +275,30 @@ class _HomePageState extends State<HomePage> {
                 child: Card(
                   elevation: 20,
                   child: SizedBox(
-                    height: 50,
+                    height: 60,
                     width: double.infinity,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
+                      padding: const EdgeInsets.only(left: 15.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(userProvider.email!),
-                          IconButton(
-                            icon: const Icon(Icons.logout),
-                            onPressed: () async {
-                              await FirebaseAuth.instance.signOut();
-                              userProvider.logout();
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              await prefs.setBool('isLoggedIn',
-                                  false); // Explicitly set isLoggedIn to false
-
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginPage()));
-                            },
+                          Builder(builder: (context) {
+                            return GestureDetector(
+                                onTap: () {
+                                  Scaffold.of(context).openDrawer();
+                                },
+                                child: const Icon(Icons.menu_rounded));
+                          }),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 10.0),
+                            child: Text(
+                              'Hello,',
+                              style: TextStyle(
+                                color: mainColour,
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       ),
