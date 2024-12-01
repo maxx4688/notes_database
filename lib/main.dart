@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:notes_database/applock/pin_entry.dart';
+import 'package:notes_database/applock/pin_provider.dart';
 import 'package:notes_database/firebase/user_provider.dart';
 import 'package:notes_database/login_page.dart';
 import 'package:notes_database/pages/home_page.dart';
@@ -14,7 +16,8 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
-      ChangeNotifierProvider(create: (context) => UserProvider())
+      ChangeNotifierProvider(create: (context) => UserProvider()),
+      ChangeNotifierProvider(create: (context) => CustomLockProvider()),
     ],
     child: const MyApp(),
   ));
@@ -50,9 +53,10 @@ class _CheckLoginState extends State<CheckLogin> {
     _checkLoginStatus();
   }
 
-  Future<void> _checkLoginStatus() async {
+  Future<dynamic> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    bool? status = prefs.getBool('isLocked');
 
     if (isLoggedIn) {
       String? userId = prefs.getString('userId');
@@ -61,7 +65,16 @@ class _CheckLoginState extends State<CheckLogin> {
       if (userId != null && email != null) {
         Provider.of<UserProvider>(context, listen: false)
             .setUser(userId, email);
-        Navigator.pushReplacementNamed(context, '/home');
+        if (status == true) {
+          print('enabled $status');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => PinEntryPage()),
+          );
+        } else {
+          print('enabled - else $status');
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       }
     } else {
       Navigator.pushReplacement(
@@ -72,9 +85,11 @@ class _CheckLoginState extends State<CheckLogin> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-        body: Center(
-            child: SpinKitDoubleBounce(
-      color: Colors.black,
-    )));
+      body: Center(
+        child: SpinKitDoubleBounce(
+          color: Colors.black,
+        ),
+      ),
+    );
   }
 }

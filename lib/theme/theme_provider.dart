@@ -11,13 +11,13 @@ class ThemeProvider extends ChangeNotifier {
   bool get isDarkMode => _themeData == darkMode;
 
   ThemeProvider() {
-    _loadTheme(); // Load the theme when the provider is created
+    _loadTheme();
   }
 
   set themeData(ThemeData themeData) {
     _themeData = themeData;
     notifyListeners();
-    _saveTheme(); // Save the theme whenever it is changed
+    _saveTheme();
   }
 
   void toggleTheme() {
@@ -28,16 +28,14 @@ class ThemeProvider extends ChangeNotifier {
     }
   }
 
-  // Load the saved theme from Shared Preferences
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final themeMode =
-        prefs.getString('theme') ?? 'light'; // Default to light if not set
+        prefs.getString('theme') ?? 'light';
     _themeData = (themeMode == 'dark') ? darkMode : lightMode;
-    notifyListeners(); // Notify listeners to rebuild with the loaded theme
+    notifyListeners();
   }
 
-  // Save the current theme to Shared Preferences
   Future<void> _saveTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final themeMode = (_themeData == darkMode) ? 'dark' : 'light';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:notes_database/firebase/user_provider.dart';
 import 'package:notes_database/theme/theme_constance.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _firestore = FirebaseFirestore.instance;
+  bool isLoading = false;
 
   Future<void> _loginUser(BuildContext context) async {
     final email = _emailController.text;
@@ -28,6 +30,9 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("One or more fields are empty.")));
     } else {
+      setState(() {
+        isLoading = true;
+      });
       try {
         // Try to signing in the user
         UserCredential userCredential =
@@ -50,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
           await prefs.setString('email', email);
           await prefs.setString('userId', userCredential.user!.uid);
 
-          Navigator.pushReplacementNamed(context, '/home'); // Navigate to Home
+          Navigator.pushReplacementNamed(context, '/home');
         } else {
           // If user data does not exist, prompt for account creation
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -61,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
         // Handle login errors
         if (e is FirebaseAuthException) {
           // If user not found, prompt for account creation
+          _showCreateAccountDialog(context, email, password);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("User not found. Please create a new account.")));
         } else {
@@ -69,6 +75,10 @@ class _LoginPageState extends State<LoginPage> {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text("Login failed: $e")));
         }
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
   }
@@ -146,12 +156,15 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Text(
                   'Hi,',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 30,
+                  ),
                 ),
                 Text(
                   'User',
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                       fontSize: 30,
                       color: mainColour),
                 ),
@@ -159,20 +172,24 @@ class _LoginPageState extends State<LoginPage> {
             )),
           ),
           TextField(
-              controller: _emailController,
-              scrollPhysics: const BouncingScrollPhysics(),
-              decoration: InputDecoration(
-                border: UnderlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10)),
-                filled: true,
-                fillColor: Colors.black12,
-                labelText: 'Email',
-              )),
+            cursorColor: mainColour,
+            controller: _emailController,
+            scrollPhysics: const BouncingScrollPhysics(),
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              filled: true,
+              fillColor: Colors.black12,
+              labelText: 'Email',
+            ),
+          ),
           const SizedBox(
             height: 20,
           ),
           TextField(
+            cursorColor: mainColour,
             controller: _passwordController,
             decoration: InputDecoration(
               border: UnderlineInputBorder(
@@ -198,14 +215,18 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 100.0),
-            child: ElevatedButton(
-              onPressed: () => _loginUser(context),
-              child: const Text(
-                "Login",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
+            child: isLoading == false
+                ? ElevatedButton(
+                    onPressed: () => _loginUser(context),
+                    child: const Text(
+                      "Login",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  )
+                : const SpinKitDoubleBounce(
+                    color: Colors.black,
+                  ),
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height / 15,

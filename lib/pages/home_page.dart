@@ -1,11 +1,11 @@
 import 'dart:ui';
 
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:notes_database/my_drawer.dart';
+import 'package:notes_database/pages/view_page.dart';
 import 'package:notes_database/theme/theme_constance.dart';
 
 class HomePage extends StatefulWidget {
@@ -203,67 +203,16 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       onTap: () {
-                        showModal(
-                          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              scrollable: true,
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => Navigator.pop(context),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(right: 5),
-                                          height: 15,
-                                          width: 15,
-                                          decoration: const BoxDecoration(
-                                              color: Color(0xFFff6059),
-                                              shape: BoxShape.circle),
-                                        ),
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(right: 5),
-                                          height: 15,
-                                          width: 15,
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Color(0xFFffbc40),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(right: 5),
-                                          height: 15,
-                                          width: 15,
-                                          decoration: const BoxDecoration(
-                                              color: Color(0xFF17c84c),
-                                              shape: BoxShape.circle),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    note['noteTitle'],
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(note['noteContent']),
-                                ],
-                              ),
-                            );
-                          },
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ViewPage(
+                              title: note['noteTitle'],
+                              content: note['noteContent'],
+                              time: note['createdTime'],
+                              id: note.id,
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -292,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                           const Padding(
                             padding: EdgeInsets.only(left: 10.0),
                             child: Text(
-                              'Hello,',
+                              'Notes,',
                               style: TextStyle(
                                 color: mainColour,
                                 fontSize: 26,
@@ -317,3 +266,68 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
+
+                        // showModal(
+                        //   filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+                        //   context: context,
+                        //   builder: (context) {
+                        //     return AlertDialog(
+                        //       scrollable: true,
+                        //       content: Column(
+                        //         mainAxisSize: MainAxisSize.min,
+                        //         children: [
+                        //           GestureDetector(
+                        //             onTap: () => Navigator.pop(context),
+                        //             child: Row(
+                        //               mainAxisAlignment:
+                        //                   MainAxisAlignment.start,
+                        //               children: [
+                        //                 Container(
+                        //                   margin:
+                        //                       const EdgeInsets.only(right: 5),
+                        //                   height: 15,
+                        //                   width: 15,
+                        //                   decoration: const BoxDecoration(
+                        //                       color: Color(0xFFff6059),
+                        //                       shape: BoxShape.circle),
+                        //                 ),
+                        //                 Container(
+                        //                   margin:
+                        //                       const EdgeInsets.only(right: 5),
+                        //                   height: 15,
+                        //                   width: 15,
+                        //                   decoration: const BoxDecoration(
+                        //                     shape: BoxShape.circle,
+                        //                     color: Color(0xFFffbc40),
+                        //                   ),
+                        //                 ),
+                        //                 Container(
+                        //                   margin:
+                        //                       const EdgeInsets.only(right: 5),
+                        //                   height: 15,
+                        //                   width: 15,
+                        //                   decoration: const BoxDecoration(
+                        //                       color: Color(0xFF17c84c),
+                        //                       shape: BoxShape.circle),
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //           ),
+                        //           const SizedBox(
+                        //             height: 20,
+                        //           ),
+                        //           Text(
+                        //             note['noteTitle'],
+                        //             style: const TextStyle(
+                        //               fontSize: 20,
+                        //               fontWeight: FontWeight.bold,
+                        //             ),
+                        //           ),
+                        //           Text(note['noteContent']),
+                        //         ],
+                        //       ),
+                        //     );
+                        //   },
+                        // );
