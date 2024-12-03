@@ -19,17 +19,15 @@ class _HomePageState extends State<HomePage> {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
 
-  Future<void> _addOrEditNoteDialog({DocumentSnapshot? note}) async {
-    final titleController =
-        TextEditingController(text: note?['noteTitle'] ?? '');
-    final contentController =
-        TextEditingController(text: note?['noteContent'] ?? '');
+  Future<void> _addOrEditNoteDialog() async {
+    final titleController = TextEditingController();
+    final contentController = TextEditingController();
 
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(note == null ? 'Add Note' : 'Edit Note'),
+          title: const Text('Add Note'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -70,18 +68,19 @@ class _HomePageState extends State<HomePage> {
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text(note == null ? 'Add' : 'Save'),
+              child: const Text('Add'),
               onPressed: () async {
                 if (titleController.text.isNotEmpty &&
                     contentController.text.isNotEmpty) {
-                  if (note == null) {
-                    await _addNote(
-                        titleController.text, contentController.text);
-                  } else {
-                    await _updateNote(
-                        note.id, titleController.text, contentController.text);
-                  }
+                  await _addNote(titleController.text, contentController.text);
                   Navigator.of(context).pop();
+                } else {
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Can't add empty note."),
+                    ),
+                  );
                 }
               },
             ),
@@ -98,21 +97,6 @@ class _HomePageState extends State<HomePage> {
       'noteTitle': title,
       'noteContent': content,
       'createdTime': FieldValue.serverTimestamp(),
-      'editedTime': FieldValue.serverTimestamp(),
-    });
-  }
-
-  Future<void> _updateNote(String noteId, String title, String content) async {
-    String uid = _auth.currentUser!.uid;
-
-    await _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('notes')
-        .doc(noteId)
-        .update({
-      'noteTitle': title,
-      'noteContent': content,
       'editedTime': FieldValue.serverTimestamp(),
     });
   }
@@ -172,6 +156,8 @@ class _HomePageState extends State<HomePage> {
                     child: ListTile(
                       title: Text(
                         note['noteTitle'],
+                        maxLines: 2,
+                        overflow: TextOverflow.fade,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
@@ -179,28 +165,19 @@ class _HomePageState extends State<HomePage> {
                         maxLines: 2,
                         overflow: TextOverflow.fade,
                       ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _addOrEditNoteDialog(note: note),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () =>
+                            ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text(
+                                'Are you sure you want to delete this note?'),
+                            action: SnackBarAction(
+                                textColor: Colors.red,
+                                label: 'Yes',
+                                onPressed: () => _deleteNote(note.id)),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () =>
-                                ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text(
-                                    'Are you sure you want to delete this note?'),
-                                action: SnackBarAction(
-                                    textColor: Colors.red,
-                                    label: 'Yes',
-                                    onPressed: () => _deleteNote(note.id)),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                       onTap: () {
                         Navigator.push(
@@ -241,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                           const Padding(
                             padding: EdgeInsets.only(left: 10.0),
                             child: Text(
-                              'Notes,',
+                              'Noting,',
                               style: TextStyle(
                                 color: mainColour,
                                 fontSize: 26,

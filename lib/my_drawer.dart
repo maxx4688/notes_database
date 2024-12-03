@@ -53,7 +53,11 @@ class MyDrawer extends StatelessWidget {
                 color: Colors.green,
               )),
               activeTrackColor: Colors.green,
-              title: const Text("Enable App Lock"),
+              title: Text(
+                provider.isLocked == false
+                    ? "Enable App lock"
+                    : "Disable App lock",
+              ),
               value: provider.isLocked,
               onChanged: (value) async {
                 if (value) {
@@ -103,7 +107,15 @@ class MyDrawer extends StatelessWidget {
           //   },
           // ),
           SizedBox(
-            height: MediaQuery.of(context).size.height / 1.35,
+            height: MediaQuery.of(context).size.height / 1.65,
+          ),
+          const Center(
+              child: Text(
+            'Nothing notes',
+            style: TextStyle(fontSize: 20),
+          )),
+          const SizedBox(
+            height: 20,
           ),
           const Divider(),
           const Text(
