@@ -59,7 +59,8 @@ class PinEntryPage extends StatelessWidget {
                     ],
                   ),
                   const Center(
-                      child: Text("Please enter your 4-digit PIN to proceed.")),
+                    child: Text("Please enter your 4-digit PIN to proceed."),
+                  ),
                   // Text(provider.code!),
                   SizedBox(
                     height: screen.height / 5,
@@ -73,14 +74,14 @@ class PinEntryPage extends StatelessWidget {
                       cursorColor: mainColour,
                       obscureText: true,
                       maxLength: 4,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
+                        fillColor: Theme.of(context).cardColor,
+                        border: const OutlineInputBorder(
                             borderSide: BorderSide.none,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(50))),
-                        labelStyle: TextStyle(color: mainColour),
+                        labelStyle: const TextStyle(color: mainColour),
                         labelText: "PIN",
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         floatingLabelAlignment: FloatingLabelAlignment.center,

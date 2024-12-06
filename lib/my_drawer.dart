@@ -16,8 +16,12 @@ class MyDrawer extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
     final changeTheme = Provider.of<ThemeProvider>(context);
     final provider = Provider.of<CustomLockProvider>(context);
+    final foreColor = Theme.of(context).brightness == Brightness.light
+        ? const Color.fromARGB(255, 255, 255, 255)
+        : const Color.fromARGB(255, 30, 30, 30);
 
     return Drawer(
+      backgroundColor: Theme.of(context).cardColor,
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -37,6 +41,7 @@ class MyDrawer extends StatelessWidget {
             height: 30,
           ),
           Card(
+            color: foreColor,
             elevation: 10,
             child: ListTile(
               title: const Text('Switch theme'),
@@ -46,6 +51,7 @@ class MyDrawer extends StatelessWidget {
             ),
           ),
           Card(
+            color: foreColor,
             elevation: 10,
             child: SwitchListTile(
               thumbIcon: const WidgetStatePropertyAll(Icon(
@@ -70,6 +76,7 @@ class MyDrawer extends StatelessWidget {
                       return AlertDialog(
                         title: const Text("Set PIN"),
                         content: TextField(
+                          cursorColor: mainColour,
                           controller: pinController,
                           keyboardType: TextInputType.number,
                           obscureText: true,
@@ -123,6 +130,7 @@ class MyDrawer extends StatelessWidget {
             style: TextStyle(color: Colors.red),
           ),
           Card(
+            color: foreColor,
             elevation: 10,
             child: ListTile(
               title: const Text('Log out'),

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,6 +23,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> _addOrEditNoteDialog() async {
     final titleController = TextEditingController();
     final contentController = TextEditingController();
+
+    // setState(() {});
 
     await showDialog(
       context: context,
@@ -125,9 +128,11 @@ class _HomePageState extends State<HomePage> {
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
+            return Center(
                 child: SpinKitDoubleBounce(
-              color: Colors.black,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white,
             ));
           }
 
@@ -146,50 +151,56 @@ class _HomePageState extends State<HomePage> {
           return Stack(
             children: [
               ListView.builder(
-                padding: const EdgeInsets.only(left: 15, right: 15, top: 110),
+                padding: const EdgeInsets.only(left: 15, right: 15, top: 120),
                 itemCount: notes.length,
                 itemBuilder: (context, index) {
                   var note = notes[index];
-                  return Card(
-                    elevation: 10,
-                    shadowColor: Colors.black45,
-                    child: ListTile(
-                      title: Text(
-                        note['noteTitle'],
-                        maxLines: 2,
-                        overflow: TextOverflow.fade,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: OpenContainer(
+                      transitionDuration: const Duration(milliseconds: 500),
+                      openShape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
-                      subtitle: Text(
-                        note['noteContent'],
-                        maxLines: 2,
-                        overflow: TextOverflow.fade,
+                      closedColor: Theme.of(context).cardColor,
+                      closedElevation: 10,
+                      transitionType: ContainerTransitionType.fadeThrough,
+                      closedShape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () =>
-                            ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text(
-                                'Are you sure you want to delete this note?'),
-                            action: SnackBarAction(
-                                textColor: Colors.red,
-                                label: 'Yes',
-                                onPressed: () => _deleteNote(note.id)),
+                      closedBuilder: (context, action) => ListTile(
+                        title: Text(
+                          note['noteTitle'],
+                          maxLines: 2,
+                          overflow: TextOverflow.fade,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          note['noteContent'],
+                          maxLines: 2,
+                          overflow: TextOverflow.fade,
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () =>
+                              ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                  'Are you sure you want to delete this note?'),
+                              action: SnackBarAction(
+                                  textColor: Colors.red,
+                                  label: 'Yes',
+                                  onPressed: () => _deleteNote(note.id)),
+                            ),
                           ),
                         ),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ViewPage(
-                              title: note['noteTitle'],
-                              content: note['noteContent'],
-                              time: note['createdTime'],
-                              id: note.id,
-                            ),
-                          ),
+                      openBuilder: (context, action) {
+                        return ViewPage(
+                          title: note['noteTitle'],
+                          content: note['noteContent'],
+                          time: note['createdTime'],
+                          id: note.id,
                         );
                       },
                     ),
@@ -199,6 +210,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const EdgeInsets.only(top: 40.0, left: 10, right: 10),
                 child: Card(
+                  color: Theme.of(context).cardColor,
                   elevation: 20,
                   child: SizedBox(
                     height: 60,
@@ -238,7 +250,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addOrEditNoteDialog(),
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

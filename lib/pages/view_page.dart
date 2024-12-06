@@ -66,6 +66,7 @@ class _ViewPageState extends State<ViewPage> {
                 height: 100,
               ),
               TextField(
+                cursorColor: mainColour,
                 cursorOpacityAnimates: true,
                 scrollPhysics: const BouncingScrollPhysics(),
                 controller: _titleEditController,
@@ -99,7 +100,7 @@ class _ViewPageState extends State<ViewPage> {
                     style: TextStyle(color: mainColour, fontSize: 20),
                   ),
                   Text(
-                    '${widget.content.length.toString()} Words',
+                    '${widget.content.length.toString()} Letters',
                     style: TextStyle(
                       color: colour,
                     ),
@@ -110,6 +111,7 @@ class _ViewPageState extends State<ViewPage> {
                 height: 20,
               ),
               TextField(
+                cursorColor: mainColour,
                 scrollPhysics: const BouncingScrollPhysics(),
                 cursorOpacityAnimates: true,
                 style: TextStyle(color: colour),
@@ -133,6 +135,8 @@ class _ViewPageState extends State<ViewPage> {
                   //     ? Colors.black
                   //     : Colors.white,
                   Colors.black,
+                  Colors.black87,
+                  Colors.black54,
                   Colors.transparent,
                 ],
               ),

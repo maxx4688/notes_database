@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:notes_database/firebase/user_provider.dart';
+import 'package:notes_database/forgot_password.dart';
+import 'package:notes_database/signup_page.dart';
 import 'package:notes_database/theme/theme_constance.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,7 +30,12 @@ class _LoginPageState extends State<LoginPage> {
 
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("One or more fields are empty.")));
+        const SnackBar(
+          content: Text(
+            "Enter both email and password!!",
+          ),
+        ),
+      );
     } else {
       setState(() {
         isLoading = true;
@@ -58,17 +65,21 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacementNamed(context, '/home');
         } else {
           // If user data does not exist, prompt for account creation
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("User not found. Please create a new account.")));
-          _showCreateAccountDialog(context, email, password);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("User not found. Please create a new account."),
+            ),
+          );
         }
       } catch (e) {
         // Handle login errors
         if (e is FirebaseAuthException) {
           // If user not found, prompt for account creation
-          _showCreateAccountDialog(context, email, password);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("User not found. Please create a new account.")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("User not found. Please create a new account."),
+            ),
+          );
         } else {
           // Show other errors (e.g., wrong password)
           print("Login failed: $e");
@@ -83,120 +94,61 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _showCreateAccountDialog(
-      BuildContext context, String email, String password) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Create Account"),
-          content: const Text(
-              "No account found for this email. Would you like to create a new account?"),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                await _createAccount(email, password, context);
-                Navigator.of(context).pop();
-              },
-              child: const Text("Yes"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("No"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _createAccount(
-      String email, String password, BuildContext context) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Add user data to Firestore
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
-        'email': email,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      // Save to UserProvider and Shared Preferences
-      userProvider.setUser(userCredential.user!.uid, email);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', true);
-      await prefs.setString('userId', userCredential.user!.uid);
-
-      Navigator.pushReplacementNamed(context, '/home'); // Navigate to Home
-    } catch (e) {
-      print("Account creation failed: $e");
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Account creation failed: $e")));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 40.0,
+        ),
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height / 3,
+            height: MediaQuery.of(context).size.height / 4,
             child: const Center(
-                child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Hi,',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 30,
-                  ),
+              child: Text(
+                'Noting',
+                style: TextStyle(fontSize: 15),
+              ),
+            ),
+          ),
+          const Row(
+            children: [
+              Text(
+                'Hi,',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 30,
                 ),
-                Text(
-                  'User',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 30,
-                      color: mainColour),
+              ),
+              Text(
+                'User',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 30,
+                  color: mainColour,
                 ),
-              ],
-            )),
+              ),
+            ],
+          ),
+          const Text('Log in your account!'),
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 20,
           ),
           TextField(
             cursorColor: mainColour,
             controller: _emailController,
             scrollPhysics: const BouncingScrollPhysics(),
-            decoration: InputDecoration(
-              border: UnderlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              filled: true,
-              fillColor: Colors.black12,
+            decoration: const InputDecoration(
               labelText: 'Email',
             ),
           ),
-          const SizedBox(
-            height: 20,
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 30,
           ),
           TextField(
             cursorColor: mainColour,
             controller: _passwordController,
             decoration: InputDecoration(
-              border: UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(10)),
-              filled: true,
-              fillColor: Colors.black12,
               labelText: 'Password',
               suffixIcon: IconButton(
                 icon: Icon(
@@ -212,20 +164,57 @@ class _LoginPageState extends State<LoginPage> {
             obscureText: isHidden,
             scrollPhysics: const BouncingScrollPhysics(),
           ),
-          const SizedBox(height: 20),
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 15,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordPage(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Forgot password?',
+                    style: TextStyle(
+                      color: mainColour,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 100.0),
             child: isLoading == false
-                ? ElevatedButton(
-                    onPressed: () => _loginUser(context),
-                    child: const Text(
-                      "Login",
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                ? Hero(
+                    tag: 'pass',
+                    child: ElevatedButton(
+                      style: const ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                          Color.fromARGB(255, 22, 22, 22),
+                        ),
+                      ),
+                      onPressed: () => _loginUser(context),
+                      child: const Text(
+                        "Log in",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   )
-                : const SpinKitDoubleBounce(
-                    color: Colors.black,
+                : SpinKitDoubleBounce(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
                   ),
           ),
           SizedBox(
@@ -236,11 +225,21 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               const Text("Don't have an account?"),
               TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Sign up',
-                    style: TextStyle(color: mainColour),
-                  ))
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SignupPage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Sign up',
+                  style: TextStyle(
+                    color: mainColour,
+                  ),
+                ),
+              ),
             ],
           )
         ],
