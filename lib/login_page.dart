@@ -31,8 +31,10 @@ class _LoginPageState extends State<LoginPage> {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          backgroundColor: Colors.black,
           content: Text(
-            "Enter both email and password!!",
+            "Enter both Email and password",
+            style: TextStyle(color: Colors.white),
           ),
         ),
       );
@@ -67,7 +69,11 @@ class _LoginPageState extends State<LoginPage> {
           // If user data does not exist, prompt for account creation
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("User not found. Please create a new account."),
+              backgroundColor: Colors.black,
+              content: Text(
+                "User not found. Please create a new account.",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           );
         }
@@ -77,14 +83,25 @@ class _LoginPageState extends State<LoginPage> {
           // If user not found, prompt for account creation
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("User not found. Please create a new account."),
+              backgroundColor: Colors.black,
+              content: Text(
+                "User not found. Please create a new account.",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           );
         } else {
           // Show other errors (e.g., wrong password)
           print("Login failed: $e");
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("Login failed: $e")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.black,
+              content: Text(
+                "Login Failed, Please try again",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          );
         }
       } finally {
         setState(() {
@@ -107,7 +124,10 @@ class _LoginPageState extends State<LoginPage> {
             child: const Center(
               child: Text(
                 'Noting',
-                style: TextStyle(fontSize: 15),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'poppins',
+                ),
               ),
             ),
           ),
@@ -116,15 +136,15 @@ class _LoginPageState extends State<LoginPage> {
               Text(
                 'Hi,',
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 30,
+                  fontFamily: 'poppins',
+                  fontSize: 35,
                 ),
               ),
               Text(
                 'User',
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 30,
+                  fontFamily: 'poppins',
+                  fontSize: 35,
                   color: mainColour,
                 ),
               ),
@@ -139,6 +159,9 @@ class _LoginPageState extends State<LoginPage> {
             controller: _emailController,
             scrollPhysics: const BouncingScrollPhysics(),
             decoration: const InputDecoration(
+              floatingLabelStyle: TextStyle(
+                color: mainColour,
+              ),
               labelText: 'Email',
             ),
           ),
@@ -149,6 +172,9 @@ class _LoginPageState extends State<LoginPage> {
             cursorColor: mainColour,
             controller: _passwordController,
             decoration: InputDecoration(
+              floatingLabelStyle: const TextStyle(
+                color: mainColour,
+              ),
               labelText: 'Password',
               suffixIcon: IconButton(
                 icon: Icon(
@@ -206,7 +232,6 @@ class _LoginPageState extends State<LoginPage> {
                         "Log in",
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

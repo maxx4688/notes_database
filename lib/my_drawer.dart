@@ -32,8 +32,8 @@ class MyDrawer extends StatelessWidget {
             'Hello,',
             style: TextStyle(
               color: mainColour,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
+              fontSize: 40,
+              fontFamily: 'poppins',
             ),
           ),
           Text(userProvider.email!),
@@ -44,7 +44,10 @@ class MyDrawer extends StatelessWidget {
             color: foreColor,
             elevation: 10,
             child: ListTile(
-              title: const Text('Switch theme'),
+              title: const Text(
+                'Switch theme',
+                style: TextStyle(fontFamily: 'poppins'),
+              ),
               onTap: () {
                 changeTheme.toggleTheme();
               },
@@ -63,6 +66,7 @@ class MyDrawer extends StatelessWidget {
                 provider.isLocked == false
                     ? "Enable App lock"
                     : "Disable App lock",
+                style: const TextStyle(fontFamily: 'poppins'),
               ),
               value: provider.isLocked,
               onChanged: (value) async {
@@ -74,24 +78,44 @@ class MyDrawer extends StatelessWidget {
                       TextEditingController pinController =
                           TextEditingController();
                       return AlertDialog(
-                        title: const Text("Set PIN"),
+                        title: const Text(
+                          "Set PIN",
+                          style: TextStyle(
+                              fontFamily: 'poppins', color: mainColour),
+                        ),
                         content: TextField(
                           cursorColor: mainColour,
                           controller: pinController,
+                          style: const TextStyle(fontFamily: 'poppins'),
                           keyboardType: TextInputType.number,
-                          obscureText: true,
                           maxLength: 4,
-                          decoration: const InputDecoration(
-                              labelText: "Enter 4-digit PIN"),
+                          decoration: InputDecoration(
+                            floatingLabelStyle: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                            labelText: "Enter 4-digit PIN",
+                          ),
                         ),
                         actions: [
-                          TextButton(
+                          ElevatedButton(
+                            style: const ButtonStyle(
+                                backgroundColor:
+                                    WidgetStatePropertyAll(mainColour)),
                             onPressed: () {
                               Navigator.pop(context, pinController.text);
                               print(provider.isLocked);
                               print(provider.code);
                             },
-                            child: const Text("Save"),
+                            child: const Text(
+                              "Save",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'poppins',
+                              ),
+                            ),
                           ),
                         ],
                       );
@@ -114,13 +138,25 @@ class MyDrawer extends StatelessWidget {
           //   },
           // ),
           SizedBox(
-            height: MediaQuery.of(context).size.height / 1.65,
+            height: MediaQuery.of(context).size.height / 1.67,
           ),
-          const Center(
-              child: Text(
-            'Nothing notes',
-            style: TextStyle(fontSize: 20),
-          )),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Not',
+                style: TextStyle(fontSize: 20, fontFamily: 'poppins'),
+              ),
+              Text(
+                'ing',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'poppins',
+                  color: mainColour,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -133,7 +169,10 @@ class MyDrawer extends StatelessWidget {
             color: foreColor,
             elevation: 10,
             child: ListTile(
-              title: const Text('Log out'),
+              title: const Text(
+                'Log out',
+                style: TextStyle(fontFamily: 'poppins'),
+              ),
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
                 userProvider.logout();

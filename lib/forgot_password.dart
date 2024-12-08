@@ -62,7 +62,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             child: const Center(
               child: Text(
                 'Noting',
-                style: TextStyle(fontSize: 15),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'poppins',
+                ),
               ),
             ),
           ),
@@ -71,17 +74,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               Text(
                 'Forgot ',
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 30,
+                  fontFamily: 'poppins',
+                  fontSize: 35,
                 ),
               ),
               Text(
                 'password?',
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 30,
-                  color: mainColour,
-                ),
+                    fontFamily: 'poppins', fontSize: 35, color: mainColour),
               ),
             ],
           ),
@@ -115,7 +115,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 "Send mail",
                 style: TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),

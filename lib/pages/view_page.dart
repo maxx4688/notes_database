@@ -55,6 +55,9 @@ class _ViewPageState extends State<ViewPage> {
     final colour = Theme.of(context).brightness == Brightness.light
         ? Colors.black54
         : Colors.white54;
+    final lcolour = Theme.of(context).brightness == Brightness.light
+        ? Colors.black38
+        : Colors.white38;
 
     return Scaffold(
       body: Stack(
@@ -77,12 +80,17 @@ class _ViewPageState extends State<ViewPage> {
                 },
                 style: TextStyle(
                   fontSize: 30,
-                  fontWeight: FontWeight.bold,
+                  fontFamily: 'poppins',
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.black
                       : Colors.white,
                 ),
                 enabled: _edit,
+                decoration: const InputDecoration(
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: mainColour),
+                  ),
+                ),
               ),
               const SizedBox(
                 height: 10,
@@ -92,17 +100,21 @@ class _ViewPageState extends State<ViewPage> {
                   Text(
                     formattedCreatedTime,
                     style: TextStyle(
-                      color: colour,
+                      color: lcolour,
                     ),
                   ),
                   const Text(
                     ' | ',
-                    style: TextStyle(color: mainColour, fontSize: 20),
+                    style: TextStyle(
+                      color: mainColour,
+                      fontSize: 20,
+                      fontFamily: 'poppins',
+                    ),
                   ),
                   Text(
                     '${widget.content.length.toString()} Letters',
                     style: TextStyle(
-                      color: colour,
+                      color: lcolour,
                     ),
                   )
                 ],
@@ -119,6 +131,11 @@ class _ViewPageState extends State<ViewPage> {
                 controller: _contentEditController,
                 maxLength: null,
                 maxLines: null,
+                decoration: const InputDecoration(
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: mainColour),
+                  ),
+                ),
               ),
             ],
           ),
@@ -158,8 +175,9 @@ class _ViewPageState extends State<ViewPage> {
                         'Notes',
                         style: TextStyle(
                           // color: inverseCol,
+                          fontFamily: 'poppins',
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 22,
                         ),
                       ),
                     ],
@@ -201,7 +219,7 @@ class _ViewPageState extends State<ViewPage> {
                             icon: const Icon(
                               Icons.done,
                               size: 30,
-                              color: Colors.green,
+                              color: Colors.white,
                             ),
                           ),
                   ],

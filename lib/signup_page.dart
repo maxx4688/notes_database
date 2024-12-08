@@ -27,8 +27,10 @@ class _SignupPageState extends State<SignupPage> {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          backgroundColor: Colors.black,
           content: Text(
-            "Enter both email and password!!",
+            "Enter both email adn password",
+            style: TextStyle(color: Colors.white),
           ),
         ),
       );
@@ -63,17 +65,21 @@ class _SignupPageState extends State<SignupPage> {
       if (e.code == 'email-already-in-use') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
+            backgroundColor: Colors.black,
             content: Text(
-              "User with this email already exists, try logging in.",
+              "User with this email already exists, Try logging in...",
+              style: TextStyle(color: Colors.white),
             ),
           ),
         );
       } else {
         print("Account creation failed: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
+            backgroundColor: Colors.black,
             content: Text(
-              "Account creation failed: $e",
+              "Failed to create account, Try again later...",
+              style: TextStyle(color: Colors.white),
             ),
           ),
         );
@@ -98,7 +104,10 @@ class _SignupPageState extends State<SignupPage> {
             child: const Center(
               child: Text(
                 'Noting',
-                style: TextStyle(fontSize: 15),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'poppins',
+                ),
               ),
             ),
           ),
@@ -107,15 +116,15 @@ class _SignupPageState extends State<SignupPage> {
               Text(
                 'New,',
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 30,
+                  fontFamily: 'poppins',
+                  fontSize: 35,
                 ),
               ),
               Text(
                 'User',
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 30,
+                  fontFamily: 'poppins',
+                  fontSize: 35,
                   color: mainColour,
                 ),
               ),
@@ -130,6 +139,9 @@ class _SignupPageState extends State<SignupPage> {
             controller: _emailController,
             scrollPhysics: const BouncingScrollPhysics(),
             decoration: const InputDecoration(
+              floatingLabelStyle: TextStyle(
+                color: mainColour,
+              ),
               labelText: 'New email',
             ),
           ),
@@ -140,6 +152,9 @@ class _SignupPageState extends State<SignupPage> {
             cursorColor: mainColour,
             controller: _passwordController,
             decoration: InputDecoration(
+              floatingLabelStyle: const TextStyle(
+                color: mainColour,
+              ),
               labelText: 'New password',
               suffixIcon: IconButton(
                 icon: Icon(
@@ -175,7 +190,6 @@ class _SignupPageState extends State<SignupPage> {
                       "Sign up",
                       style: TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   )
